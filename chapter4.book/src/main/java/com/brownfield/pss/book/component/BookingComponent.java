@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
@@ -19,35 +21,41 @@ import com.brownfield.pss.book.entity.Passenger;
 import com.brownfield.pss.book.repository.BookingRepository;
 import com.brownfield.pss.book.repository.InventoryRepository;
 
+@EnableFeignClients
+@RefreshScope
 @Component
 public class BookingComponent {
 	private static final Logger logger = LoggerFactory.getLogger(BookingComponent.class);
 	//private static final String FareURL = "http://localhost:8080/fares";
-	private static final String FareURL = "/fares";
+	//private static final String FareURL = "/fares";
 	
-	@Value("${fares-service.url}")
-	private String fareServiceUrl;
+	//@Value("${fares-service.url}")
+	//private String fareServiceUrl;
 	
 	BookingRepository bookingRepository;
 	InventoryRepository inventoryRepository;
+	FareServiceProxy fareServiceProxy;
 	
 	//@Autowired
-	private RestTemplate restTemplate;
+	//private RestTemplate restTemplate;
 	
 	Sender sender;
 
 	@Autowired
 	public BookingComponent (BookingRepository bookingRepository,
-					  Sender sender,InventoryRepository inventoryRepository){
+					  Sender sender,InventoryRepository inventoryRepository, FareServiceProxy fareServiceProxy){
 		this.bookingRepository = bookingRepository;
-		this.restTemplate = new RestTemplate();
+		//this.restTemplate = new RestTemplate();
 		this.sender = sender;
 		this.inventoryRepository = inventoryRepository;
+		this.fareServiceProxy = fareServiceProxy;
 	}
 	public long book(BookingRecord record) {
 		logger.info("calling fares to get fare");
 		//call fares to get fare
-		Fare fare = restTemplate.getForObject(fareServiceUrl + FareURL +"/get?flightNumber="+record.getFlightNumber()+"&flightDate="+record.getFlightDate(),Fare.class);
+		//Fare fare = restTemplate.getForObject(fareServiceUrl + FareURL +"/get?flightNumber="+record.getFlightNumber()+"&flightDate="+record.getFlightDate(),Fare.class);
+		Fare fare = fareServiceProxy.getFare(record.getFlightNumber(), record.getFlightDate());
+		
 		logger.info("calling fares to get fare "+ fare);
 		//check fare
 		if (!record.getFare().equals(fare.getFare()))
