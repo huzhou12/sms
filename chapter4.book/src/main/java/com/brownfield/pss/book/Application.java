@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 import com.brownfield.pss.book.component.BookingComponent;
 import com.brownfield.pss.book.entity.BookingRecord;
@@ -19,6 +20,7 @@ import com.brownfield.pss.book.entity.Passenger;
 import com.brownfield.pss.book.repository.BookingRepository;
 import com.brownfield.pss.book.repository.InventoryRepository;
 
+@EnableDiscoveryClient
 @SpringBootApplication
 public class Application implements CommandLineRunner{
 	private static final Logger logger = LoggerFactory.getLogger(Application.class);
