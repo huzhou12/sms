@@ -12,5 +12,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface FareServiceProxy {
 
 	@RequestMapping(value="fares/get", method=RequestMethod.GET)
-	Fare getFare(@RequestParam(value="flightNumber") String flightNumber, @RequestParam(value="flighrDate") String fligntDate);
+	Fare getFare(@RequestParam(value="flightNumber") String flightNumber, @RequestParam(value="flightDate") String flightDate);
 }
