@@ -9,12 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 import com.brownfield.pss.search.entity.Fares;
 import com.brownfield.pss.search.entity.Flight;
 import com.brownfield.pss.search.entity.Inventory;
 import com.brownfield.pss.search.repository.FlightRepository;
 
+@EnableDiscoveryClient
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 	private static final Logger logger = LoggerFactory.getLogger(Application.class);
