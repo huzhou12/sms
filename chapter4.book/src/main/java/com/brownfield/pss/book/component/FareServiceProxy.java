@@ -2,11 +2,13 @@ package com.brownfield.pss.book.component;
 
 
 import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.cloud.netflix.ribbon.RibbonClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name="fares-proxy")
+@RibbonClient(name="fares")
 public interface FareServiceProxy {
 
 	@RequestMapping(value="fares/get", method=RequestMethod.GET)
