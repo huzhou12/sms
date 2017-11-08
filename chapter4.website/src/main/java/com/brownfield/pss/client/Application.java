@@ -6,25 +6,34 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.web.client.RestTemplate;
 
+@EnableDiscoveryClient
 @EnableGlobalMethodSecurity
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 	private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
-   	RestTemplate searchClient = new RestTemplate();
+   	//RestTemplate searchClient = new RestTemplate();
+	@Autowired
+	RestTemplate searchClient;
 	
-  	 RestTemplate bookingClient = new RestTemplate();
+  	//RestTemplate bookingClient = new RestTemplate();
+	@Autowired
+	RestTemplate bookingClient;
 	
-   	RestTemplate checkInClient = new RestTemplate();
+   	//RestTemplate checkInClient = new RestTemplate();
+	@Autowired
+	RestTemplate checkInClient;
 	
-	 RestTemplate restClient= new RestTemplate();
+	//RestTemplate restClient= new RestTemplate();
 	
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
@@ -34,8 +43,8 @@ public class Application implements CommandLineRunner {
 	public void run(String... strings) throws Exception {
 		//Search for a flight
 		SearchQuery searchQuery = new SearchQuery("SEA","SFO","22-JAN-16");
- 		//Flight[] flights = searchClient.postForObject("http://search-service/search/get", searchQuery, Flight[].class); 
-		Flight[] flights = searchClient.postForObject("http://localhost:8090/search/get", searchQuery, Flight[].class); 
+ 		Flight[] flights = searchClient.postForObject("http://search-service/search/get", searchQuery, Flight[].class); 
+		//Flight[] flights = searchClient.postForObject("http://localhost:8090/search/get", searchQuery, Flight[].class); 
  		
 		Arrays.asList(flights).forEach(flight -> logger.info(" flight >"+ flight));
   		
@@ -52,8 +61,8 @@ public class Application implements CommandLineRunner {
 		booking.setPassengers(passengers);
 		long bookingId =0;
 		try { 
-			//long bookingId = bookingClient.postForObject("http://book-service/booking/create", booking, long.class); 
-			 bookingId = bookingClient.postForObject("http://localhost:8060/booking/create", booking, long.class); 
+			bookingId = bookingClient.postForObject("http://book-service/booking/create", booking, long.class); 
+			// bookingId = bookingClient.postForObject("http://localhost:8060/booking/create", booking, long.class); 
 			logger.info("Booking created "+ bookingId);
 		}catch (Exception e){
 			logger.error("BOOKING SERVICE NOT AVAILABLE...!!!");
@@ -63,7 +72,8 @@ public class Application implements CommandLineRunner {
 		if(bookingId == 0) return;
 		try {
 			CheckInRecord checkIn = new CheckInRecord("Franc", "Gavin", "28C", null, "BF101","22-JAN-16", bookingId);
-			long checkinId = checkInClient.postForObject("http://localhost:8070/checkin/create", checkIn, long.class); 
+			//long checkinId = checkInClient.postForObject("http://localhost:8070/checkin/create", checkIn, long.class); 
+			long checkinId = checkInClient.postForObject("http://checkin-service/chechin/create", checkIn, long.class);
 			logger.info("Checked IN "+ checkinId);
 		}catch (Exception e){
 			logger.error("CHECK IN SERVICE NOT AVAILABLE...!!!"); 
