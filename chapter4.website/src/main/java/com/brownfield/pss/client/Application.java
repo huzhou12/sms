@@ -43,7 +43,7 @@ public class Application implements CommandLineRunner {
 	public void run(String... strings) throws Exception {
 		//Search for a flight
 		SearchQuery searchQuery = new SearchQuery("SEA","SFO","22-JAN-16");
- 		Flight[] flights = searchClient.postForObject("http://search-service/search/get", searchQuery, Flight[].class); 
+ 		Flight[] flights = searchClient.postForObject("http://search-apigateway/api/search/get", searchQuery, Flight[].class); 
 		//Flight[] flights = searchClient.postForObject("http://localhost:8090/search/get", searchQuery, Flight[].class); 
  		
 		Arrays.asList(flights).forEach(flight -> logger.info(" flight >"+ flight));

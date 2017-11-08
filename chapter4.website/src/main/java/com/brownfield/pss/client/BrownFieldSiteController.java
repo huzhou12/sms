@@ -43,7 +43,7 @@ public class BrownFieldSiteController {
    @RequestMapping(value="/search", method=RequestMethod.POST)
    public String greetingSubmit(@ModelAttribute UIData uiData, Model model) {
 		//Flight[] flights = searchClient.postForObject("http://localhost:8090/search/get", uiData.getSearchQuery(), Flight[].class); 
-	   Flight[] flights = searchClient.postForObject("http://search-service/search/get", uiData.getSearchQuery(), Flight[].class); 
+	   Flight[] flights = searchClient.postForObject("http://search-apigateway/api/search/get", uiData.getSearchQuery(), Flight[].class); 
 		uiData.setFlights(Arrays.asList(flights));
 		model.addAttribute("uidata", uiData);
        return "result";
