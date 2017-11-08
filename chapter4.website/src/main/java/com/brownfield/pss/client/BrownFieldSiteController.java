@@ -76,7 +76,7 @@ public class BrownFieldSiteController {
 	 		booking.setPassengers(passengers);
 		long bookingId =0;
 		try { 
-			bookingId = bookingClient.postForObject("http://book-service/booking/create", booking, long.class); 
+			bookingId = bookingClient.postForObject("http://book-apigateway/api/booking/create", booking, long.class); 
 			// bookingId = bookingClient.postForObject("http://localhost:8060/booking/create", booking, long.class); 
 			logger.info("Booking created "+ bookingId);
 		}catch (Exception e){
@@ -97,7 +97,7 @@ public class BrownFieldSiteController {
 	public String searchBookingSubmit(@ModelAttribute UIData uiData, Model model) {
 		Long id = new Long(uiData.getBookingid());
  		//BookingRecord booking = bookingClient.getForObject("http://localhost:8060/booking/get/"+id, BookingRecord.class);
-		BookingRecord booking = bookingClient.getForObject("http://book-service/booking/get/"+id, BookingRecord.class);
+		BookingRecord booking = bookingClient.getForObject("http://book-apigateway/api/booking/get/"+id, BookingRecord.class);
 
 		Flight flight = new Flight(booking.getFlightNumber(), booking.getOrigin(),booking.getDestination()
 				,booking.getFlightDate(),new Fares(booking.getFare(),"AED"));
