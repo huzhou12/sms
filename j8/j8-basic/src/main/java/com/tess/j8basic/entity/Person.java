@@ -2,7 +2,9 @@ package com.tess.j8basic.entity;
 
 import javax.persistence.Entity;
 
-@Entity
+import org.springframework.stereotype.Component;
+
+@Component
 public class Person {
 
 	private String name;

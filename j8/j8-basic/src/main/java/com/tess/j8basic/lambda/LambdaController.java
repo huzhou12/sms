@@ -4,7 +4,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.tess.j8basic.entity.Person;
 
 @RestController
 public class LambdaController {
@@ -32,5 +35,16 @@ public class LambdaController {
 	@RequestMapping("/basic/stringlength")
 	public List<Integer> getStringLength() {
 		return basic.getStringLength();
+	}
+	
+	@RequestMapping(value="/basic/people", method=RequestMethod.GET)
+	public List<Person> getPeople(){
+		return basic.getPeople();
+	}
+	
+	@RequestMapping(value="/basic/removedInt", method=RequestMethod.GET)
+	public List<String> getRemovedInt(){
+		List<String> nums = basic.getRemovedList();
+		return nums;
 	}
 }
