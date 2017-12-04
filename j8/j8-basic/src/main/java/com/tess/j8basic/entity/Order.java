@@ -1,0 +1,14 @@
+package com.tess.j8basic.entity;
+
+public class Order {
+	private int id;
+	
+	public Order(int id) {
+		this.id = id;
+	}
+	
+	public int getId() {
+		return id;
+	}
+
+}
