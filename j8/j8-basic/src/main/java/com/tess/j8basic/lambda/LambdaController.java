@@ -1,14 +1,22 @@
 package com.tess.j8basic.lambda;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.Temporal;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
+import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +28,8 @@ import com.tess.j8basic.entity.Person;
 
 @RestController
 public class LambdaController {
+	
+	Logger logger = Logger.getLogger(LambdaController.class.getName());
 	
 	@Autowired
 	private Basic basic;
@@ -155,8 +165,69 @@ public class LambdaController {
 		return opt.orElse(new AtomicInteger());
 	}
 	
-	@RequestMapping("dateTime/dt")
+	@RequestMapping("date/dt")
 	public LocalDateTime getDateTime() {
 		return basic.getDateTime();
+	}
+	
+	@RequestMapping("date/adj")
+	public Temporal payDayAdjuster() {
+		Temporal date = LocalDate.of(2017,12, 2);
+		Temporal date2 = LocalDate.of(2017,12, 20);
+		logger.info("Date 2: " + basic.payDayAdjuster(date2).toString());
+		return basic.payDayAdjuster(date);
+	}
+	
+	@RequestMapping("concurrent/isParallel")
+	public boolean isParallel() {
+		return basic.isParallel();
+	}
+	
+	@RequestMapping("concurrent/duration")
+	public Duration getDoubleIt() {
+		int total = 0;
+		
+		
+		//set pool size - default size = the number of processors on the machine
+		//but both approaches below do not work
+		
+		//System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "8");
+		
+		//ForkJoinPool pool = new ForkJoinPool(4);
+		//logger.info("Pool 2 size: " + pool.getPoolSize());
+		
+		Instant before = Instant.now();
+		total = IntStream.of(3,1,4,1,5,9,7,8)
+				.parallel()
+				.map(Basic::doubleIt)
+				.sum();
+
+/*		ForkJoinTask<?> task = pool.submit(
+				() -> IntStream.of(3,1,4,1,5,9,7,8)
+				.parallel()
+				.map(Basic::doubleIt)
+				.sum());
+
+		try {
+			 total = (int) task.get();
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		}finally {
+			pool.shutdown();
+		}
+*/		
+		Instant after = Instant.now();
+		Duration duration = Duration.between(before, after);
+		logger.info("Total of doubles: " + total );
+		logger.info("Time = " + duration.toMillis());
+		logger.info("Total processors: " + Runtime.getRuntime().availableProcessors());
+		logger.info("Pool size: " + ForkJoinPool.commonPool().getPoolSize());
+
+		return duration;
+	}
+	
+	@RequestMapping("concurrent/future")
+	public String future() {
+		return basic.future();
 	}
 }

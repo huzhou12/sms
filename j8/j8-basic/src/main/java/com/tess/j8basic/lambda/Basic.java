@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,6 +13,8 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -25,6 +28,10 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
@@ -400,11 +407,83 @@ public class Basic {
 		
 		logger.info("moonLandingTime + 3 mins: " + moonLandingTime.plusMinutes(3));
 		logger.info("moonLandingTime + 3 hours: " + moonLandingTime.plusHours(3));
-		
-		
-		
-		
-		
+				
 		return walk;
+	}
+	
+	public Temporal payDayAdjuster(Temporal input) {
+		LocalDate date = LocalDate.from(input);
+		int day;
+		
+		if(date.getDayOfMonth() < 15) {
+			day = 15;
+		} else {
+			day = date.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth();
+		}
+		
+		date = date.withDayOfMonth(day);
+		
+		if (date.getDayOfWeek() == DayOfWeek.SATURDAY ||
+				date.getDayOfWeek() == DayOfWeek.SUNDAY) {
+			date = date.with(TemporalAdjusters.previous(DayOfWeek.FRIDAY));
+		}
+		
+		return input.with(date);
+	}
+	
+	public boolean isParallel() {
+		List<Integer> nums = Arrays.asList(3,2,1,4,1,5,9);
+		boolean isP;
+		
+		isP = nums.stream().isParallel();			//false
+		isP = nums.stream().parallel().isParallel(); //true
+		isP = nums.parallelStream().isParallel(); 	//true
+		isP	= nums.parallelStream().sequential().isParallel(); //false
+		
+		return isP;
+	}
+	
+	public static int doubleIt(int n) {
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException ignore) {
+			
+		}
+		return n * 2;
+	}
+	
+	public String future() {
+		ExecutorService service = Executors.newCachedThreadPool();
+		
+		Future<String> future = service.submit(() -> {
+			Thread.sleep(10);
+			return "Hello World";
+		});
+		
+		logger.info("More processing... ");
+		
+		// isDone used here is not a good practice. CampletableFuture should be used
+		while (!future.isDone()) {
+			logger.info("waiting ... ");
+		}
+		
+		return getIfNotCancelled(future);
+	}
+	
+	private String getIfNotCancelled(Future<String> future) {
+		
+		try {
+			if (!future.isCancelled()) {
+				logger.info(future.get());
+				return future.get();
+			} else {
+				logger.info("Cancelled");
+				return "Cancelled";
+			}
+		}catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		}
+		
+		return "";
 	}
 }
